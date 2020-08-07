@@ -19,7 +19,7 @@ export default class ClassController {
     const subject = filters.subject as string;
     const time = filters.time as string;
 
-    if(!filters.week_day || !filters.subject || !filters.time) {
+    if(!week_day || !subject || !time) {
       return res.status(400).json({
         error: 'Missing filters to search classes'
       });
@@ -37,15 +37,13 @@ export default class ClassController {
           .whereRaw('`class_schedule`.`to` > ??', [timeInMinutes])
       })
       .where('classes.subject', '=', subject)
-      .join('users', 'classes.user_id', '=', 'user_id')
+      .join('users', 'classes.user_id', '=', 'users.id')
       .select(['classes.*', 'users.*'])
 
-    res.json(classes)
+    return res.json(classes)
   }
   
   async create(req:Request, res:Response) {
-
-    console.log("> Entrou na rota /classes")
 
     const {
       name,
@@ -56,6 +54,16 @@ export default class ClassController {
       cost,
       schedule
     } = req.body
+
+    console.log(
+      name,
+      avatar,
+      whatsapp,
+      bio,
+      subject,
+      cost,
+      schedule
+    )
 
     const trx = await db.transaction();
 
@@ -91,14 +99,13 @@ export default class ClassController {
       console.log("> Criando conexão com db e inserindo dados do horário")
       await trx('class_schedule').insert(classSchedule)
 
-
-      trx.commit();
+      await trx.commit();
       
       return res.status(201).send()
 
     } catch (erro) {
 
-      trx.rollback()
+      await trx.rollback()
 
       return res.status(400).json({
         error: 'Unexpected erro while creating new class'
