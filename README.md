@@ -15,14 +15,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-## functionalities
+## Functionalities
 
-# Connections
+### Connections
 
 - Route to list the total connections
 - Routes to create a new connection
 
-# Class
+### Class
 
 - Route to create a class
 - Route to list classes
